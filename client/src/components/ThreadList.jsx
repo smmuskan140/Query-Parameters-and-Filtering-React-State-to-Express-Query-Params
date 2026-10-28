@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useDebounce } from "../hooks/useDebounce";
 import { getThreads } from "../services/threads.service";
+import { useDebounce } from "../hooks/useDebounce";
 import SearchBar from "./SearchBar.jsx";
 import SortDropdown from "./SortDropdown.jsx";
 
@@ -10,10 +10,10 @@ export default function ThreadList() {
   const [sort, setSort] = useState("newest");
   const debouncedSearch = useDebounce(search, 300);
 
-  const { data, isPending, isError, error } = useQuery({
+  const { data = [], isPending, isError, error } = useQuery({
     queryKey: ["threads", { search: debouncedSearch, sort }],
     queryFn: ({ queryKey }) => getThreads(queryKey[1]),
-    placeholderData: keepPreviousData,
+    placeholderData: keepPreviousData
   });
 
   return (
@@ -29,7 +29,7 @@ export default function ThreadList() {
         <p>Loading threads…</p>
       ) : (
         <ul className="threads">
-          {(data ?? []).map((t) => (
+          {data.map((t) => (
             <li className="card" key={t.id}>
               <h3>{t.title}</h3>
               <p>{t.body}</p>
